@@ -1,0 +1,46 @@
+services:
+  inkarr-statistics:
+    container_name: inkarr-statistics
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - MONGODB_URI=mongodb://mongodb:27017/inkarr-statistics
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+    networks:
+      - inkarr-statistics-network
+
+  mongodb:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+    networks:
+      - inkarr-statistics-network
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: inkarr-statistics-ngrok
+    command: http --url=inkarr-statistics.ngrok.dev inkarr-statistics:3001
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    ports:
+      - '4040:4040'  # Panel de inspección local
+    restart: unless-stopped
+    depends_on:
+      - inkarr-statistics
+    networks:
+      - inkarr-statistics-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  inkarr-statistics-network:
+    driver: bridge
