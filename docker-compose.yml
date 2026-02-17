@@ -7,7 +7,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3001
-      - MONGODB_URI=mongodb://mongodb:27017/inkarr-statistics
+      - MONGODB_URI=mongodb://inkarr-statistics-mongodb:27017/inkarr-statistics
     depends_on:
       - mongodb
     restart: unless-stopped
@@ -15,6 +15,7 @@ services:
       - inkarr-statistics-network
 
   mongodb:
+    container_name: inkarr-statistics-mongodb
     image: mongo:7
     ports:
       - "27017:27017"
@@ -31,7 +32,7 @@ services:
     environment:
       - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
     ports:
-      - '4040:4040'  # Panel de inspección local
+      - '4041:4040'  # Panel de inspección local
     restart: unless-stopped
     depends_on:
       - inkarr-statistics
